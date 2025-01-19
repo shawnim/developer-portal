@@ -26,7 +26,7 @@ Assume we need to submit a vote on the governance action with ID `df58f714c0765f
 1. Obtain the URL and hash of the new constitution proposal from the governance state:
 
 ```shell
-cardano-cli conway query gov-state | \
+cardano-cli conway query gov-state --mainnet | \
   jq -r --arg govActionId "df58f714c0765f3489afb6909384a16c31d600695be7e86ff9c59cf2e8a48c79" '.proposals | to_entries[] | select(.value.actionId.txId | contains($govActionId)) | .value'
 ```
 ```json
@@ -95,6 +95,7 @@ cardano-cli conway governance vote create \
   --governance-action-tx-id "df58f714c0765f3489afb6909384a16c31d600695be7e86ff9c59cf2e8a48c79" \
   --governance-action-index "0" \
   --drep-verification-key-file drep.vkey \
+  --mainnet \
   --out-file df58f714c0765f3489afb6909384a16c31d600695be7e86ff9c59cf2e8a48c79-constitution.vote
 ```
 
@@ -106,6 +107,7 @@ cardano-cli conway governance vote create \
   --governance-action-tx-id "df58f714c0765f3489afb6909384a16c31d600695be7e86ff9c59cf2e8a48c79" \
   --governance-action-index "0" \
   --cc-hot-verification-key-file cc-hot.vkey \
+  --mainnet \
   --out-file df58f714c0765f3489afb6909384a16c31d600695be7e86ff9c59cf2e8a48c79-constitution.vote
 ```
 Voting with SPO keys:
@@ -116,6 +118,7 @@ cardano-cli conway governance vote create \
   --governance-action-tx-id "df58f714c0765f3489afb6909384a16c31d600695be7e86ff9c59cf2e8a48c79" \
   --governance-action-index "0" \
   --cold-verification-key-file cold.vkey \
+  --mainnet \
   --out-file df58f714c0765f3489afb6909384a16c31d600695be7e86ff9c59cf2e8a48c79-constitution.vote
 ```
 
@@ -129,13 +132,15 @@ cardano-cli conway transaction build \
   --change-address $(< payment.addr) \
   --vote-file df58f714c0765f3489afb6909384a16c31d600695be7e86ff9c59cf2e8a48c79-constitution.vote \
   --witness-override 2 \
+  --mainnet \
   --out-file vote-tx.raw
 ```
 Sign it with the DRep key:
 ```shell
-cardano-cli transaction sign --tx-body-file vote-tx.raw \
+cardano-cli conway transaction sign --tx-body-file vote-tx.raw \
   --signing-key-file drep.skey \
   --signing-key-file payment.skey \
+  --mainnet \
   --out-file vote-tx.signed
 ```
 OR sign it with the CC hot key:
@@ -147,12 +152,13 @@ cardano-cli transaction sign --tx-body-file vote-tx.raw \
 ```
 OR sign it with the SPO cold key:
 ```shell
-cardano-cli transaction sign --tx-body-file vote-tx.raw \
+cardano-cli conway transaction sign --tx-body-file vote-tx.raw \
   --signing-key-file cold.skey \
   --signing-key-file payment.skey \
+  --mainnet \
   --out-file vote-tx.signed
 ```
 Submit the transaction:
 ```shell
-cardano-cli transaction submit --tx-file vote-tx.signed
+cardano-cli conway transaction submit --mainnet --tx-file vote-tx.signed
 ```
